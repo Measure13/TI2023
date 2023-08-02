@@ -22,7 +22,8 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN 0 */
-
+#include "tim.h"
+static uint32_t time_temp = 0;
 /* USER CODE END 0 */
 
 /*----------------------------------------------------------------------------*/
@@ -69,8 +70,45 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI2_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI2_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI3_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI3_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI4_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI4_IRQn);
+
 }
 
 /* USER CODE BEGIN 2 */
-
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  time_temp = htim5.Instance->CNT;
+  switch (GPIO_Pin)
+  {
+  case Q1_Pin:
+    __NVIC_DisableIRQ(EXTI0_IRQn);
+    quadrant_time_stamp[Q1] = time_temp;
+    break;
+  case Q2_Pin:
+    __NVIC_DisableIRQ(EXTI1_IRQn);
+    quadrant_time_stamp[Q2] = time_temp;
+    break;
+  case Q3_Pin:
+    __NVIC_DisableIRQ(EXTI2_IRQn);
+    quadrant_time_stamp[Q3] = time_temp;
+    break;
+  case Q4_Pin:
+    __NVIC_DisableIRQ(EXTI3_IRQn);
+    quadrant_time_stamp[Q4] = time_temp;
+    break;
+  default:
+    break;
+  }
+}
 /* USER CODE END 2 */
