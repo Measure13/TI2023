@@ -26,7 +26,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "AD9833.h"
+#include "USART_HMI.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -47,7 +48,10 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+bool volatile conv_done = false;
+uint16_t adc1_values[ADC_DATA_NUM + 4];
+uint16_t adc2_values[ADC_DATA_NUM + 4];
+uint16_t adc3_values[ADC_DATA_NUM + 4];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -93,8 +97,18 @@ int main(void)
   MX_ADC1_Init();
   MX_TIM2_Init();
   MX_USART1_UART_Init();
+  MX_ADC2_Init();
+  MX_ADC3_Init();
+  MX_TIM5_Init();
   /* USER CODE BEGIN 2 */
-
+  AD9833_Init();
+  UARTHMI_Forget_It();
+  UARTHMI_Reset();
+  HAL_TIM_Base_Start_IT(&htim2);
+	HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc1_values, ADC_DATA_NUM + 4);
+	HAL_ADC_Start_DMA(&hadc2, (uint32_t*)adc2_values, ADC_DATA_NUM + 4);
+	HAL_ADC_Start_DMA(&hadc3, (uint32_t*)adc3_values, ADC_DATA_NUM + 4);
+HAL_Delay(150);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -104,7 +118,24 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    printf("BirB:%d\n", 6);
+	  if (sweep_freq)
+    {
+      for (uint16_t i = 15; i < 21; ++i)
+      {
+        AD9833_Default_Set(i * 1000);
+        HAL_Delay(1000);
+      }
+      sweep_freq = false;
+    }
+    else if (sound_trace)
+    {
+      /* code */
+    }
+    else if (magnet_trace)
+    {
+      /* code */
+    }
+    
   }
   /* USER CODE END 3 */
 }
@@ -132,7 +163,7 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
   RCC_OscInitStruct.PLL.PLLM = 8;
-  RCC_OscInitStruct.PLL.PLLN = 128;
+  RCC_OscInitStruct.PLL.PLLN = 168;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 4;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
@@ -149,7 +180,7 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
   {
     Error_Handler();
   }

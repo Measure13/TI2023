@@ -34,14 +34,17 @@ extern "C" {
 
 extern TIM_HandleTypeDef htim2;
 
+extern TIM_HandleTypeDef htim5;
+
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
 
 void MX_TIM2_Init(void);
+void MX_TIM5_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+void Timer_2_Adjust(uint32_t freq);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

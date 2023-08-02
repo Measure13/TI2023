@@ -3,6 +3,8 @@
         "*.m": "matlab",
         "*.asm": "asm-collection",
         "main.h": "c",
-        "usart.h": "c"
+        "usart.h": "c",
+        "adc.h": "c",
+        "tim.h": "c"
     }
 }

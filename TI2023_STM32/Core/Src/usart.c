@@ -21,11 +21,17 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
+#define SWEEP_FREQ 0X65
+#define SOUND_TRACE 0X66
+#define MAGNET_TRACE 0X67
 #define UART_RX_BUF_SIZE 128 // 1024 * sizeof(uint16_t)
 
 volatile bool initialization_done = false;
 volatile bool ready_to_receive = false;
 volatile bool receive_done = false;
+volatile bool sweep_freq = false;
+volatile bool sound_trace = false;
+volatile bool magnet_trace = false;
 
 uint8_t uart1_rx_bp[UART_RX_BUF_SIZE];
 uint8_t uart1_tx_bp[UART_RX_BUF_SIZE];
@@ -90,6 +96,9 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+    /* USART1 interrupt Init */
+    HAL_NVIC_SetPriority(USART1_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(USART1_IRQn);
   /* USER CODE BEGIN USART1_MspInit 1 */
 
   /* USER CODE END USART1_MspInit 1 */
@@ -113,6 +122,8 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
     */
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_9|GPIO_PIN_10);
 
+    /* USART1 interrupt Deinit */
+    HAL_NVIC_DisableIRQ(USART1_IRQn);
   /* USER CODE BEGIN USART1_MspDeInit 1 */
 
   /* USER CODE END USART1_MspDeInit 1 */
@@ -134,6 +145,9 @@ void UART_RX_Data_Parse(uint8_t* p, uint8_t cnt)
   initialization_done = false;
   ready_to_receive = false;
   receive_done = false;
+  sweep_freq = false;
+  sound_trace = false;
+  magnet_trace = false;
 	switch (p[0])
   {
   case 0x88:
@@ -144,6 +158,15 @@ void UART_RX_Data_Parse(uint8_t* p, uint8_t cnt)
     break;
   case 0xFD:
     receive_done = true;
+    break;
+  case SWEEP_FREQ:
+    sweep_freq = true;
+    break;
+  case SOUND_TRACE:
+    sound_trace = true;
+    break;
+  case MAGNET_TRACE:
+    magnet_trace = true;
     break;
   default:
     break;

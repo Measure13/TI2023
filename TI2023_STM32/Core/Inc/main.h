@@ -49,17 +49,35 @@ extern "C" {
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
-
+#define ADC_DATA_NUM 1024
+#define CLK_FREQ 84000000
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
+extern uint16_t adc_values[ADC_DATA_NUM + 4];
+extern bool adc_values_sqr[ADC_DATA_NUM];
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define Q1_Pin GPIO_PIN_1
+#define Q1_GPIO_Port GPIOF
+#define Q2_Pin GPIO_PIN_2
+#define Q2_GPIO_Port GPIOF
+#define Q3_Pin GPIO_PIN_3
+#define Q3_GPIO_Port GPIOF
+#define Q4_Pin GPIO_PIN_4
+#define Q4_GPIO_Port GPIOF
+#define SPI1_CS_Pin GPIO_PIN_4
+#define SPI1_CS_GPIO_Port GPIOA
+#define SPI1_SCK_Pin GPIO_PIN_5
+#define SPI1_SCK_GPIO_Port GPIOA
+#define SPI1_FSYNC_Pin GPIO_PIN_6
+#define SPI1_FSYNC_GPIO_Port GPIOA
+#define SPI1_DAT_Pin GPIO_PIN_7
+#define SPI1_DAT_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
 

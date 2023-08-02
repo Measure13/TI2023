@@ -8,6 +8,8 @@
 "ti2023_stm32\usart.o"
 "ti2023_stm32\stm32f4xx_it.o"
 "ti2023_stm32\stm32f4xx_hal_msp.o"
+"ti2023_stm32\ad9833.o"
+"ti2023_stm32\usart_hmi.o"
 "ti2023_stm32\stm32f4xx_hal_adc.o"
 "ti2023_stm32\stm32f4xx_hal_adc_ex.o"
 "ti2023_stm32\stm32f4xx_ll_adc.o"
