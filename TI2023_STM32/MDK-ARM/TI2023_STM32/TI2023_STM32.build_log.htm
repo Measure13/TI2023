@@ -21,13 +21,26 @@ Target DLL:      CMSIS_AGDI.dll V1.33.12.0
 Dialog DLL:      TCM.DLL V1.56.1.0
  
 <h2>Project:</h2>
-D:\MyWorks\Programs\Github\TI2023\TI2023_STM32\MDK-ARM\TI2023_STM32.uvprojx
+d:\MyWorks\Programs\Github\TI2023\TI2023_STM32\MDK-ARM\TI2023_STM32.uvprojx
 Project File Date:  08/03/2023
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Softwares\Keil5\ARM\ARM_Compiler_5.06u7\Bin'
 Build target 'TI2023_STM32'
-"TI2023_STM32\TI2023_STM32.axf" - 0 Error(s), 0 Warning(s).
+compiling stm32f4xx_it.c...
+../Core/Src/stm32f4xx_it.c(216): warning:  #111-D: statement is unreachable
+    HAL_GPIO_EXTI_IRQHandler(Q1_Pin);
+../Core/Src/stm32f4xx_it.c(232): warning:  #111-D: statement is unreachable
+    HAL_GPIO_EXTI_IRQHandler(Q2_Pin);
+../Core/Src/stm32f4xx_it.c(248): warning:  #111-D: statement is unreachable
+    HAL_GPIO_EXTI_IRQHandler(Q3_Pin);
+../Core/Src/stm32f4xx_it.c(264): warning:  #111-D: statement is unreachable
+    HAL_GPIO_EXTI_IRQHandler(Q4_Pin);
+../Core/Src/stm32f4xx_it.c: 4 warnings, 0 errors
+linking...
+Program Size: Code=23388 RO-data=568 RW-data=124 ZI-data=11316  
+FromELF: creating hex file...
+"TI2023_STM32\TI2023_STM32.axf" - 0 Error(s), 4 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -51,7 +64,7 @@ Package Vendor: Keil
 
    * Component: ARM::CMSIS:CORE:5.6.0
       Include file:  CMSIS/Core/Include/tz_context.h
-Build Time Elapsed:  00:00:00
+Build Time Elapsed:  00:00:02
 </pre>
 </body>
 </html>

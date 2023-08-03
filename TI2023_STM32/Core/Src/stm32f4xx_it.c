@@ -22,6 +22,8 @@
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "tim.h"
+#include "gpio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -207,7 +209,9 @@ void SysTick_Handler(void)
 void EXTI1_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI1_IRQn 0 */
-
+  quadrant_time_stamp[Q1] = htim5.Instance->CNT;
+  __NVIC_DisableIRQ(EXTI1_IRQn);
+  return;
   /* USER CODE END EXTI1_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(Q1_Pin);
   /* USER CODE BEGIN EXTI1_IRQn 1 */
@@ -221,7 +225,9 @@ void EXTI1_IRQHandler(void)
 void EXTI2_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI2_IRQn 0 */
-
+  quadrant_time_stamp[Q2] = htim5.Instance->CNT;
+  __NVIC_DisableIRQ(EXTI2_IRQn);
+  return;
   /* USER CODE END EXTI2_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(Q2_Pin);
   /* USER CODE BEGIN EXTI2_IRQn 1 */
@@ -235,7 +241,9 @@ void EXTI2_IRQHandler(void)
 void EXTI3_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI3_IRQn 0 */
-
+  quadrant_time_stamp[Q3] = htim5.Instance->CNT;
+  __NVIC_DisableIRQ(EXTI3_IRQn);
+  return;
   /* USER CODE END EXTI3_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(Q3_Pin);
   /* USER CODE BEGIN EXTI3_IRQn 1 */
@@ -249,7 +257,9 @@ void EXTI3_IRQHandler(void)
 void EXTI4_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI4_IRQn 0 */
-
+  quadrant_time_stamp[Q4] = htim5.Instance->CNT;
+  __NVIC_DisableIRQ(EXTI4_IRQn);
+  return;
   /* USER CODE END EXTI4_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(Q4_Pin);
   /* USER CODE BEGIN EXTI4_IRQn 1 */

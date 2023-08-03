@@ -71,9 +71,10 @@ static float G_VECTOR[4][2] = {{0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 
 uint32_t quadrant_time_stamp[4] = {0, 0, 0, 0};
 static float pix, piy;
 static float mpix, mpiy;
-static Point receiver1 = {0.0, 0.0}; // ½ÓÊÕÆ÷1Î»ÖÃ
-static Point receiver2 = {410.0f, 0.0}; // ½ÓÊÕÆ÷2Î»ÖÃ
-static Point receiver3 = {410.0f, 410.0f}; // ½ÓÊÕÆ÷3Î»ÖÃ
+static Point receiver1 = {0.0, 0.0}; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½1Î»ï¿½ï¿½
+static Point receiver2 = {410.0f, 0.0}; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½2Î»ï¿½ï¿½
+static Point receiver3 = {410.0f, 410.0f}; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½3Î»ï¿½ï¿½
+int flag = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -132,13 +133,9 @@ int main(void)
   MX_TIM5_Init();
   /* USER CODE BEGIN 2 */
   HAL_NVIC_DisableIRQ(EXTI1_IRQn);
-  __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);
   HAL_NVIC_DisableIRQ(EXTI2_IRQn);
-  __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_2);
   HAL_NVIC_DisableIRQ(EXTI3_IRQn);
-  __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_3);
   HAL_NVIC_DisableIRQ(EXTI4_IRQn);
-  __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_4);
   AD9833_Init();
   AD9833_Set_Amplitude(0);
   UARTHMI_Forget_It();
@@ -149,7 +146,15 @@ int main(void)
 	HAL_ADC_Start_DMA(&hadc3, (uint32_t*)adc3_values, ADC_DATA_NUM + 4);
   HAL_Delay(150);
   /* USER CODE END 2 */
+__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);
+      HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+      __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_2);
+      HAL_NVIC_EnableIRQ(EXTI2_IRQn);
+      __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_3);
+      HAL_NVIC_EnableIRQ(EXTI3_IRQn);
+      __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_4);
 
+while(1);
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
@@ -175,16 +180,20 @@ int main(void)
     {
       __HAL_TIM_SetCounter(&htim5, 0);
       HAL_TIM_Base_Start(&htim5);
+      __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);
       HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+      __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_2);
       HAL_NVIC_EnableIRQ(EXTI2_IRQn);
+      __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_3);
       HAL_NVIC_EnableIRQ(EXTI3_IRQn);
+      __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_4);
       HAL_NVIC_EnableIRQ(EXTI4_IRQn);
       while (1)
       {
         if ((!((__NVIC_GetEnableIRQ(EXTI1_IRQn)) | (__NVIC_GetEnableIRQ(EXTI2_IRQn)) | (__NVIC_GetEnableIRQ(EXTI3_IRQn)) | (__NVIC_GetEnableIRQ(EXTI4_IRQn)))))
         {
           Quadrant_Lattice_Indexing();
-          HAL_Delay(500);
+          HAL_Delay(2000);
           break;
         }
         else if (sweep_freq | magnet_trace)
@@ -323,8 +332,6 @@ static void Quadrant_Lattice_Indexing(void)
   pix = pinit.x;
   piy = pinit.y;
   Gradient_descent_wrapper();
-  pix=0.1;
-	piy=149.9;
   pix += WIDTH / 2;
   piy = -piy;
   piy += LENGTH / 2;
@@ -380,7 +387,7 @@ static void Magnet_Mode(void)
 
 static Point calculateSourceLocation(Point receiver1, Point receiver2, Point receiver3, float tdoa1, float tdoa2, float tdoa3)
 {
-    // Ê¹ÓÃFANGËã·¨¼ÆËãÉùÔ´µÄÎ»ÖÃ
+    // Ê¹ï¿½ï¿½FANGï¿½ã·¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½Î»ï¿½ï¿½
     float distance1 = V_BOARD * tdoa1;
     float distance2 = V_BOARD * tdoa2;
     float distance3 = V_BOARD * tdoa3;
