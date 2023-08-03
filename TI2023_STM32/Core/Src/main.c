@@ -32,7 +32,11 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+typedef struct
+{
+    float x;
+    float y;
+} Point;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -67,6 +71,9 @@ static float G_VECTOR[4][2] = {{0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 
 uint32_t quadrant_time_stamp[4] = {0, 0, 0, 0};
 static float pix, piy;
 static float mpix, mpiy;
+static Point receiver1 = {0.0, 0.0}; // 接收器1位置
+static Point receiver2 = {410.0f, 0.0}; // 接收器2位置
+static Point receiver3 = {410.0f, 410.0f}; // 接收器3位置
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -80,6 +87,7 @@ static void Quadrant_Lattice_Indexing(void);
 static void Magnet_Positioning(void);
 static void Magnet_Indexing(void);
 static void Magnet_Mode(void);
+static Point calculateSourceLocation(Point receiver1, Point receiver2, Point receiver3, float tdoa1, float tdoa2, float tdoa3);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -305,12 +313,15 @@ static void Quadrant_Lattice_Indexing(void)
       min = quadrant_time_stamp[i];
     }
   }
-  pix = MICROPHONE[P_skip_num][0] * LENGTH / HALF_SQUARE / 2;
-  piy = MICROPHONE[P_skip_num][1] * LENGTH / HALF_SQUARE / 2;
+//  pix = MICROPHONE[P_skip_num][0] * LENGTH / HALF_SQUARE / 4;
+//  piy = MICROPHONE[P_skip_num][1] * LENGTH / HALF_SQUARE / 4;
   for (uint8_t i = 0; i < 4; ++i)
   {
     CORRECT_POINT_DIST[i] = (float)(quadrant_time_stamp[i] - min) * V_BOARD / CLK_FREQ;
   }
+  Point pinit = calculateSourceLocation(receiver1, receiver2, receiver3, 0, CORRECT_POINT_DIST[0] - CORRECT_POINT_DIST[2], CORRECT_POINT_DIST[3] - CORRECT_POINT_DIST[2]);
+  pix = pinit.x;
+  piy = pinit.y;
   Gradient_descent_wrapper();
   pix=0.1;
 	piy=149.9;
@@ -365,6 +376,50 @@ static void Magnet_Mode(void)
   ADC_Get_Values(DEFAULT_SAMPLE_RATE);
   Magnet_Positioning();
   Magnet_Indexing();
+}
+
+static Point calculateSourceLocation(Point receiver1, Point receiver2, Point receiver3, float tdoa1, float tdoa2, float tdoa3)
+{
+    // 使用FANG算法计算声源的位置
+    float distance1 = V_BOARD * tdoa1;
+    float distance2 = V_BOARD * tdoa2;
+    float distance3 = V_BOARD * tdoa3;
+
+    float R21 = distance2 - distance1;
+    float R31 = distance3 - distance1;
+    float g = ((R31*receiver2.x)/R21 - receiver3.x)/receiver3.y;
+    float h = (receiver3.x*receiver3.x+receiver3.y*receiver3.y-R31*R31+R31*R21*(1-(receiver2.x*receiver2.x/(R21*R21))))/(2*receiver3.y);
+    float d = -((1-(receiver2.x/R21)*(receiver2.x/R21))+g*g);
+    float e = receiver2.x*(1-(receiver2.x/R21)*(receiver2.x/R21))-2*g*h;
+    float f = (R21*R21/4)*(1-(receiver2.x/R21)*(receiver2.x/R21))*(1-(receiver2.x/R21)*(receiver2.x/R21))-h*h;
+    float x1 = (-e-sqrtf(e*e-4*d*f))/(2*d);
+    float y1 = g*x1+h;
+    float x2 = (-e+sqrtf(e*e-4*d*f))/(2*d);
+    float y2 = g*x2+h;
+    Point source;
+    if(x1 <= 0 || x1 >= receiver3.x || y1 <= 0 || y1 >= receiver3.y) {
+        source.x = x2;
+        source.y = y2;
+        return source;
+    }
+    if(x2 <= 0 || x2 >= receiver3.x || y2 <= 0 || y2 >= receiver3.y) {
+        source.x = x1;
+        source.y = y1;
+        return source;
+    }
+    float t1 = (R21*R21-receiver2.x*receiver2.x+2*receiver2.x*x1+2*R21*sqrtf(x1*x1+y1*y1));
+    float t2 = (R21*R21-receiver2.x*receiver2.x+2*receiver2.x*x2+2*R21*sqrtf(x2*x2+y2*y2));
+    if(t1 < 0) t1 = -t1;
+    if(t2 < 0) t2 = -t2;
+    if(t1 < t2){
+        source.x = x1;
+        source.y = y1;
+    }
+    else{
+        source.x = x2;
+        source.y = y2;
+    }
+    return source;
 }
 /* USER CODE END 4 */
 
