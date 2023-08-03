@@ -60,7 +60,7 @@ void MX_GPIO_Init(void)
   /*Configure GPIO pins : PFPin PFPin PFPin PFPin */
   GPIO_InitStruct.Pin = Q1_Pin|Q2_Pin|Q3_Pin|Q4_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PAPin PAPin PAPin PAPin */

@@ -57,6 +57,7 @@ uint16_t adc1_values[ADC_DATA_NUM + 4];
 uint16_t adc2_values[ADC_DATA_NUM + 4];
 uint16_t adc3_values[ADC_DATA_NUM + 4];
 uint32_t quadrant_time_stamp[4];
+static float tdoa_wanted[4] = {0, 0, 0, 0};
 
 static uint16_t total_steps = 50;
 static uint16_t steps = 15;
@@ -69,10 +70,11 @@ static float POINT_DIST[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 static float CORRECT_POINT_DIST[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 static float G_VECTOR[4][2] = {{0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f}};
 uint32_t quadrant_time_stamp[4] = {0, 0, 0, 0};
+volatile bool interrupt_dis[4] = {false, false, false, false};
 static float pix, piy;
 static float mpix, mpiy;
-static Point receiver1 = {0.0, 0.0}; // ������1λ��
-static Point receiver2 = {410.0f, 0.0}; // ������2λ��
+static Point receiver1 = {0.0f, 0.0f}; // ������1λ��
+static Point receiver2 = {410.0f, 0.0f}; // ������2λ��
 static Point receiver3 = {410.0f, 410.0f}; // ������3λ��
 int flag = 0;
 /* USER CODE END PV */
@@ -146,15 +148,7 @@ int main(void)
 	HAL_ADC_Start_DMA(&hadc3, (uint32_t*)adc3_values, ADC_DATA_NUM + 4);
   HAL_Delay(150);
   /* USER CODE END 2 */
-__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);
-      HAL_NVIC_EnableIRQ(EXTI1_IRQn);
-      __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_2);
-      HAL_NVIC_EnableIRQ(EXTI2_IRQn);
-      __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_3);
-      HAL_NVIC_EnableIRQ(EXTI3_IRQn);
-      __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_4);
 
-while(1);
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
@@ -178,6 +172,7 @@ while(1);
     }
     else if (sound_trace)
     {
+		printf("page page0\xff\xff\xff");
       __HAL_TIM_SetCounter(&htim5, 0);
       HAL_TIM_Base_Start(&htim5);
       __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);
@@ -190,10 +185,10 @@ while(1);
       HAL_NVIC_EnableIRQ(EXTI4_IRQn);
       while (1)
       {
-        if ((!((__NVIC_GetEnableIRQ(EXTI1_IRQn)) | (__NVIC_GetEnableIRQ(EXTI2_IRQn)) | (__NVIC_GetEnableIRQ(EXTI3_IRQn)) | (__NVIC_GetEnableIRQ(EXTI4_IRQn)))))
+        if ((!((__NVIC_GetEnableIRQ(EXTI1_IRQn)) | (__NVIC_GetEnableIRQ(EXTI2_IRQn)) | (__NVIC_GetEnableIRQ(EXTI3_IRQn)) | (__NVIC_GetEnableIRQ(EXTI4_IRQn))))) // ((interrupt_dis[Q1]) & (interrupt_dis[Q2]) & (interrupt_dis[Q3]) & (interrupt_dis[Q4]))
         {
           Quadrant_Lattice_Indexing();
-          HAL_Delay(2000);
+          HAL_Delay(1000);
           break;
         }
         else if (sweep_freq | magnet_trace)
@@ -327,11 +322,15 @@ static void Quadrant_Lattice_Indexing(void)
   for (uint8_t i = 0; i < 4; ++i)
   {
     CORRECT_POINT_DIST[i] = (float)(quadrant_time_stamp[i] - min) * V_BOARD / CLK_FREQ;
+	  tdoa_wanted[i] = (float)quadrant_time_stamp[i] / CLK_FREQ;
   }
-  Point pinit = calculateSourceLocation(receiver1, receiver2, receiver3, 0, CORRECT_POINT_DIST[0] - CORRECT_POINT_DIST[2], CORRECT_POINT_DIST[3] - CORRECT_POINT_DIST[2]);
+  Point pinit = calculateSourceLocation(receiver1, receiver2, receiver3, tdoa_wanted[2], tdoa_wanted[3], tdoa_wanted[0]);
   pix = pinit.x;
   piy = pinit.y;
-  Gradient_descent_wrapper();
+  pix -= WIDTH / 2;
+  piy -= LENGTH / 2;
+  printf("t26.txt=\"%d,%d\"\xff\xff\xff", (int16_t)(pix * 100), (int16_t)(piy * 100));
+//  Gradient_descent_wrapper();
   pix += WIDTH / 2;
   piy = -piy;
   piy += LENGTH / 2;

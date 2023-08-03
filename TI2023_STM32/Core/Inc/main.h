@@ -74,6 +74,7 @@ extern uint16_t adc_values[ADC_DATA_NUM + 4];
 extern bool adc_values_sqr[ADC_DATA_NUM];
 extern uint32_t quadrant_time_stamp[4];
 extern int flag;
+extern volatile bool interrupt_dis[4];
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/

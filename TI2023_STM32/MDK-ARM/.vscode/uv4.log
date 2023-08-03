@@ -1,3 +1,21 @@
-Load "TI2023_STM32\\TI2023_STM32.axf" 
-Erase Done.Programming Done.Verify OK.Application running ...
-Flash Load finished at 19:01:34
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Softwares\Keil5\ARM\ARM_Compiler_5.06u7\Bin'
+Build target 'TI2023_STM32'
+compiling stm32f4xx_it.c...
+../Core/Src/stm32f4xx_it.c(217): warning:  #111-D: statement is unreachable
+    HAL_GPIO_EXTI_IRQHandler(Q1_Pin);
+../Core/Src/stm32f4xx_it.c(234): warning:  #111-D: statement is unreachable
+    HAL_GPIO_EXTI_IRQHandler(Q2_Pin);
+../Core/Src/stm32f4xx_it.c(251): warning:  #111-D: statement is unreachable
+    HAL_GPIO_EXTI_IRQHandler(Q3_Pin);
+../Core/Src/stm32f4xx_it.c(268): warning:  #111-D: statement is unreachable
+    HAL_GPIO_EXTI_IRQHandler(Q4_Pin);
+../Core/Src/stm32f4xx_it.c: 4 warnings, 0 errors
+compiling main.c...
+../Core/Src/main.c(292): warning:  #177-D: function "Gradient_descent_wrapper"  was declared but never referenced
+  static void Gradient_descent_wrapper(void)
+../Core/Src/main.c: 1 warning, 0 errors
+linking...
+Program Size: Code=21924 RO-data=456 RW-data=88 ZI-data=11272  
+FromELF: creating hex file...
+"TI2023_STM32\TI2023_STM32.axf" - 0 Error(s), 5 Warning(s).
+Build Time Elapsed:  00:00:04

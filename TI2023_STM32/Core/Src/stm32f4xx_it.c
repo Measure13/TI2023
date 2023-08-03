@@ -211,6 +211,7 @@ void EXTI1_IRQHandler(void)
   /* USER CODE BEGIN EXTI1_IRQn 0 */
   quadrant_time_stamp[Q1] = htim5.Instance->CNT;
   __NVIC_DisableIRQ(EXTI1_IRQn);
+	// interrupt_dis[Q1] = true;
   return;
   /* USER CODE END EXTI1_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(Q1_Pin);
@@ -227,6 +228,7 @@ void EXTI2_IRQHandler(void)
   /* USER CODE BEGIN EXTI2_IRQn 0 */
   quadrant_time_stamp[Q2] = htim5.Instance->CNT;
   __NVIC_DisableIRQ(EXTI2_IRQn);
+	// interrupt_dis[Q2] = true;
   return;
   /* USER CODE END EXTI2_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(Q2_Pin);
@@ -243,6 +245,7 @@ void EXTI3_IRQHandler(void)
   /* USER CODE BEGIN EXTI3_IRQn 0 */
   quadrant_time_stamp[Q3] = htim5.Instance->CNT;
   __NVIC_DisableIRQ(EXTI3_IRQn);
+	// interrupt_dis[Q3] = true;
   return;
   /* USER CODE END EXTI3_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(Q3_Pin);
@@ -259,6 +262,7 @@ void EXTI4_IRQHandler(void)
   /* USER CODE BEGIN EXTI4_IRQn 0 */
   quadrant_time_stamp[Q4] = htim5.Instance->CNT;
   __NVIC_DisableIRQ(EXTI4_IRQn);
+	// interrupt_dis[Q4] = true;
   return;
   /* USER CODE END EXTI4_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(Q4_Pin);
