@@ -22,7 +22,7 @@
 
 /* USER CODE BEGIN 0 */
 #include "tim.h"
-static bool conv_done = false;
+static bool volatile conv_done = false;
 /* USER CODE END 0 */
 
 ADC_HandleTypeDef hadc1;

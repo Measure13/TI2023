@@ -132,6 +132,7 @@ int main(void)
   HAL_NVIC_DisableIRQ(EXTI4_IRQn);
   __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_4);
   AD9833_Init();
+  AD9833_Set_Amplitude(0);
   UARTHMI_Forget_It();
   UARTHMI_Reset();
   HAL_TIM_Base_Start_IT(&htim2);
@@ -150,11 +151,16 @@ int main(void)
     /* USER CODE BEGIN 3 */
 	  if (sweep_freq)
     {
+		AD9833_Set_Amplitude(127);
+		HAL_Delay(100);
       for (uint16_t i = 15; i < 21; ++i)
       {
+		  
         AD9833_Default_Set(i * 1000);
         HAL_Delay(1000);
       }
+      AD9833_Set_Amplitude(0);
+	  AD9833_Default_Set(0);
       sweep_freq = false;
     }
     else if (sound_trace)
@@ -306,53 +312,16 @@ static void Quadrant_Lattice_Indexing(void)
     CORRECT_POINT_DIST[i] = (float)(quadrant_time_stamp[i] - min) * V_BOARD / CLK_FREQ;
   }
   Gradient_descent_wrapper();
+  pix=0.1;
+	piy=149.9;
   pix += WIDTH / 2;
   piy = -piy;
   piy += LENGTH / 2;
   x_index = (uint8_t)(pix / LATTICE_6_UNIT) + 1;
   y_index = (uint8_t)(piy / LATTICE_6_UNIT) + 1;
   printf("page 0\xff\xff\xff");
-  printf("t25.txt=\"(%c%c,%02d%02d)\"\xff\xff\xff", (x_index | 0x40), ((x_index + 1) | 0x40), y_index, y_index + 1);
-  printf("fill %d,%d,%d,%d,BLUE\xff\xff\xff", x_index * LATTICE_6_SQUARE_UH, y_index * LATTICE_6_SQUARE_UH, LATTICE_6_SQUARE_UH * 2, LATTICE_6_SQUARE_UH * 2);
-  // x_offset = pix - (x_index - 1) * LATTICE_6_UNIT;
-  // y_offset = piy - (y_index - 1) * LATTICE_6_UNIT;
-  // if ((x_offset > LATTICE_6_UNIT / 2) && (x_index < 12))
-  // {
-  //   x_offset = x_index + 1;
-  // }
-  // else if ((x_offset < LATTICE_6_UNIT / 2) && (x_index > 1))
-  // {
-  //   x_offset = x_index - 1;
-  // }
-  // else if ((x_offset > LATTICE_6_UNIT / 2) && (x_index == 12))
-  // {
-  //   x_offset = x_index - 1;
-  // }
-  // else if ((x_offset < LATTICE_6_UNIT / 2) && (x_index == 1))
-  // {
-  //   x_offset = x_index;
-  // }
-  
-  // if ((y_offset > LATTICE_6_UNIT / 2) && (y_index < 12))
-  // {
-  //   y_offset = y_index + 1;
-  // }
-  // else if ((y_offset < LATTICE_6_UNIT / 2) && (y_index > 1))
-  // {
-  //   y_offset = y_index - 1;
-  // }
-  // else if ((y_offset > LATTICE_6_UNIT / 2) && (y_index == 12))
-  // {
-  //   y_offset = y_index - 1;
-  // }
-  // else if ((y_offset < LATTICE_6_UNIT / 2) && (y_index == 1))
-  // {
-  //   y_offset = y_index;
-  // }
-  
-  // printf("page 0\xff\xff\xff");
-  // printf("t25.txt=\"(%c%c,%02d%02d)\"\xff\xff\xff", (x_offset | 0x40), ((x_offset + 1) | 0x40), y_offset, y_offset + 1);
-  // printf("fill %d,%d,%d,%d,BLUE\xff\xff\xff", x_offset * LATTICE_6_SQUARE_UH, y_offset * LATTICE_6_SQUARE_UH, LATTICE_6_SQUARE_UH * 2, LATTICE_6_SQUARE_UH * 2);
+  printf("t25.txt=\"(%c%c,%02d%02d)\"\xff\xff\xff", ((x_index * 2 - 1) | 0x40), ((x_index * 2) | 0x40), y_index * 2 - 1, y_index * 2);
+  printf("fill %d,%d,%d,%d,BLUE\xff\xff\xff", (x_index - 1) * LATTICE_6_SQUARE_UH + LATTICE_12_SQUARE_UH + 1, (y_index - 1) * LATTICE_6_SQUARE_UH + LATTICE_12_SQUARE_UH + 1, LATTICE_6_SQUARE_UH, LATTICE_6_SQUARE_UH);
 }
 
 void Configuration_Init(void)
@@ -390,6 +359,7 @@ static void Magnet_Indexing(void)
 
 static void Magnet_Mode(void)
 {
+	AD9833_Set_Amplitude(127);
   AD9833_Default_Set(DEFAULT_DDS_FREQ);
   HAL_Delay(50);
   ADC_Get_Values(DEFAULT_SAMPLE_RATE);
