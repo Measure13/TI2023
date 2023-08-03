@@ -66,6 +66,7 @@ static float CORRECT_POINT_DIST[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 static float G_VECTOR[4][2] = {{0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f}};
 uint32_t quadrant_time_stamp[4] = {0, 0, 0, 0};
 static float pix, piy;
+static float mpix, mpiy;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -76,6 +77,9 @@ static inline float norm(float px, float py);
 static void Gradient_descent(uint8_t step);
 static void Gradient_descent_wrapper(void);
 static void Quadrant_Lattice_Indexing(void);
+static void Magnet_Positioning(void);
+static void Magnet_Indexing(void);
+static void Magnet_Mode(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -174,11 +178,12 @@ int main(void)
           break;
         }
       }
-      sound_trace = false;
       HAL_TIM_Base_Stop(&htim5);
+      sound_trace = false;
     }
     else if (magnet_trace)
     {
+      Magnet_Mode();
       magnet_trace = false;
     }
     
@@ -307,7 +312,47 @@ static void Quadrant_Lattice_Indexing(void)
   x_index = (uint8_t)(pix / LATTICE_6_UNIT) + 1;
   y_index = (uint8_t)(piy / LATTICE_6_UNIT) + 1;
   printf("page 0\xff\xff\xff");
-  printf("fill %d,%d,%d,%d,BLUE\xff\xff\xff", x_index * LATTICE_6_SQUARE, y_index * LATTICE_6_SQUARE, LATTICE_6_SQUARE, LATTICE_6_SQUARE);
+  printf("t25.txt=\"(%c%c,%02d%02d)\"\xff\xff\xff", (x_index | 0x40), ((x_index + 1) | 0x40), y_index, y_index + 1);
+  printf("fill %d,%d,%d,%d,BLUE\xff\xff\xff", x_index * LATTICE_6_SQUARE_UH, y_index * LATTICE_6_SQUARE_UH, LATTICE_6_SQUARE_UH * 2, LATTICE_6_SQUARE_UH * 2);
+  // x_offset = pix - (x_index - 1) * LATTICE_6_UNIT;
+  // y_offset = piy - (y_index - 1) * LATTICE_6_UNIT;
+  // if ((x_offset > LATTICE_6_UNIT / 2) && (x_index < 12))
+  // {
+  //   x_offset = x_index + 1;
+  // }
+  // else if ((x_offset < LATTICE_6_UNIT / 2) && (x_index > 1))
+  // {
+  //   x_offset = x_index - 1;
+  // }
+  // else if ((x_offset > LATTICE_6_UNIT / 2) && (x_index == 12))
+  // {
+  //   x_offset = x_index - 1;
+  // }
+  // else if ((x_offset < LATTICE_6_UNIT / 2) && (x_index == 1))
+  // {
+  //   x_offset = x_index;
+  // }
+  
+  // if ((y_offset > LATTICE_6_UNIT / 2) && (y_index < 12))
+  // {
+  //   y_offset = y_index + 1;
+  // }
+  // else if ((y_offset < LATTICE_6_UNIT / 2) && (y_index > 1))
+  // {
+  //   y_offset = y_index - 1;
+  // }
+  // else if ((y_offset > LATTICE_6_UNIT / 2) && (y_index == 12))
+  // {
+  //   y_offset = y_index - 1;
+  // }
+  // else if ((y_offset < LATTICE_6_UNIT / 2) && (y_index == 1))
+  // {
+  //   y_offset = y_index;
+  // }
+  
+  // printf("page 0\xff\xff\xff");
+  // printf("t25.txt=\"(%c%c,%02d%02d)\"\xff\xff\xff", (x_offset | 0x40), ((x_offset + 1) | 0x40), y_offset, y_offset + 1);
+  // printf("fill %d,%d,%d,%d,BLUE\xff\xff\xff", x_offset * LATTICE_6_SQUARE_UH, y_offset * LATTICE_6_SQUARE_UH, LATTICE_6_SQUARE_UH * 2, LATTICE_6_SQUARE_UH * 2);
 }
 
 void Configuration_Init(void)
@@ -323,6 +368,33 @@ void Configuration_Init(void)
   htim5.State = HAL_TIM_STATE_BUSY;
   __HAL_TIM_ENABLE_IT(&htim5, TIM_IT_UPDATE);
   __HAL_TIM_ENABLE(&htim5);
+}
+
+static void Magnet_Positioning(void)
+{
+  //mpix, mpiy
+}
+
+static void Magnet_Indexing(void)
+{
+  uint8_t x_index, y_index;
+  mpix += WIDTH / 2;
+  mpiy = -mpiy;
+  mpiy += LENGTH / 2;
+  x_index = (uint8_t)(mpix / LATTICE_12_UNIT) + 1;
+  y_index = (uint8_t)(mpiy / LATTICE_12_UNIT) + 1;
+  printf("page 0\xff\xff\xff");
+  printf("t25.txt=\"(%c,%02d)\"\xff\xff\xff", (x_index | 0x40), y_index);
+  printf("fill %d,%d,%d,%d,BROWN\xff\xff\xff", x_index * LATTICE_6_SQUARE_UH, y_index * LATTICE_6_SQUARE_UH, LATTICE_6_SQUARE_UH, LATTICE_6_SQUARE_UH);
+}
+
+static void Magnet_Mode(void)
+{
+  AD9833_Default_Set(DEFAULT_DDS_FREQ);
+  HAL_Delay(50);
+  ADC_Get_Values(DEFAULT_SAMPLE_RATE);
+  Magnet_Positioning();
+  Magnet_Indexing();
 }
 /* USER CODE END 4 */
 

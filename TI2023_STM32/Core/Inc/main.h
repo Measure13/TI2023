@@ -59,7 +59,10 @@ extern "C" {
 #define V_BOARD 3000
 #define UARTHMI_LATTICE 12
 #define LATTICE_6_UNIT 50
-#define LATTICE_6_SQUARE 18
+#define LATTICE_12_UNIT 25
+#define LATTICE_6_SQUARE_UH 18
+#define DEFAULT_DDS_FREQ 16000
+#define DEFAULT_SAMPLE_RATE 160000
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
