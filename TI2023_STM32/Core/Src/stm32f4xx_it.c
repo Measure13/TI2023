@@ -204,19 +204,42 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
+  * @brief This function handles EXTI line0 interrupt.
+  */
+void EXTI0_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI0_IRQn 0 */
+	//if(HAL_GPIO_ReadPin(Q1_GPIO_Port, Q1_Pin)){
+  quadrant_time_stamp[Q1] = htim5.Instance->CNT;
+  __NVIC_DisableIRQ(EXTI0_IRQn);
+	// interrupt_dis[Q4] = true;
+  //}
+	__HAL_GPIO_EXTI_CLEAR_IT(Q1_Pin);
+	//return;
+  /* USER CODE END EXTI0_IRQn 0 */
+ // HAL_GPIO_EXTI_IRQHandler(Q1_Pin);
+ /* USER CODE BEGIN EXTI0_IRQn 1 */
+
+  /* USER CODE END EXTI0_IRQn 1 */
+}
+
+/**
   * @brief This function handles EXTI line1 interrupt.
   */
 void EXTI1_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI1_IRQn 0 */
-  quadrant_time_stamp[Q1] = htim5.Instance->CNT;
-  __NVIC_DisableIRQ(EXTI1_IRQn);
+	//if(HAL_GPIO_ReadPin(Q2_GPIO_Port, Q2_Pin)){
+  quadrant_time_stamp[Q2] = htim5.Instance->CNT;
+	__NVIC_DisableIRQ(EXTI1_IRQn);
 	// interrupt_dis[Q1] = true;
-  return;
+ // }
+	__HAL_GPIO_EXTI_CLEAR_IT(Q2_Pin);
+	//return;
   /* USER CODE END EXTI1_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(Q1_Pin);
+ // HAL_GPIO_EXTI_IRQHandler(Q2_Pin);
   /* USER CODE BEGIN EXTI1_IRQn 1 */
-
+//
   /* USER CODE END EXTI1_IRQn 1 */
 }
 
@@ -226,12 +249,15 @@ void EXTI1_IRQHandler(void)
 void EXTI2_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI2_IRQn 0 */
-  quadrant_time_stamp[Q2] = htim5.Instance->CNT;
+	//if(HAL_GPIO_ReadPin(Q3_GPIO_Port, Q3_Pin)){
+  quadrant_time_stamp[Q3] = htim5.Instance->CNT;
   __NVIC_DisableIRQ(EXTI2_IRQn);
 	// interrupt_dis[Q2] = true;
-  return;
+ // }
+	__HAL_GPIO_EXTI_CLEAR_IT(Q3_Pin);
+	//return;
   /* USER CODE END EXTI2_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(Q2_Pin);
+ // HAL_GPIO_EXTI_IRQHandler(Q3_Pin);
   /* USER CODE BEGIN EXTI2_IRQn 1 */
 
   /* USER CODE END EXTI2_IRQn 1 */
@@ -243,32 +269,18 @@ void EXTI2_IRQHandler(void)
 void EXTI3_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI3_IRQn 0 */
-  quadrant_time_stamp[Q3] = htim5.Instance->CNT;
+	//if(HAL_GPIO_ReadPin(Q4_GPIO_Port, Q4_Pin)){
+  quadrant_time_stamp[Q4] = htim5.Instance->CNT;
   __NVIC_DisableIRQ(EXTI3_IRQn);
-	// interrupt_dis[Q3] = true;
-  return;
+	// interrupt_dis[Q2] = true;
+ // }
+	__HAL_GPIO_EXTI_CLEAR_IT(Q4_Pin);
+	//return;
   /* USER CODE END EXTI3_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(Q3_Pin);
+  //HAL_GPIO_EXTI_IRQHandler(Q4_Pin);
   /* USER CODE BEGIN EXTI3_IRQn 1 */
 
   /* USER CODE END EXTI3_IRQn 1 */
-}
-
-/**
-  * @brief This function handles EXTI line4 interrupt.
-  */
-void EXTI4_IRQHandler(void)
-{
-  /* USER CODE BEGIN EXTI4_IRQn 0 */
-  quadrant_time_stamp[Q4] = htim5.Instance->CNT;
-  __NVIC_DisableIRQ(EXTI4_IRQn);
-	// interrupt_dis[Q4] = true;
-  return;
-  /* USER CODE END EXTI4_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(Q4_Pin);
-  /* USER CODE BEGIN EXTI4_IRQn 1 */
-
-  /* USER CODE END EXTI4_IRQn 1 */
 }
 
 /**

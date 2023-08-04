@@ -52,15 +52,18 @@ typedef struct
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+float a_watch, b_watch, c_watch;
+float watch;
 bool volatile conv_done = false;
+bool enable_interrupt[4] = {false, false, false, false};
 uint16_t adc1_values[ADC_DATA_NUM + 4];
 uint16_t adc2_values[ADC_DATA_NUM + 4];
 uint16_t adc3_values[ADC_DATA_NUM + 4];
-uint32_t quadrant_time_stamp[4];
+volatile uint32_t quadrant_time_stamp[4];
 static float tdoa_wanted[4] = {0, 0, 0, 0};
 
-static uint16_t total_steps = 50;
-static uint16_t steps = 15;
+static uint16_t total_steps = 5;
+static uint16_t steps = 10;
 static uint16_t P_skip_num = 0;
 static float MICROPHONE[4][2] = { {HALF_SQUARE, HALF_SQUARE}, 
                                   {-HALF_SQUARE, HALF_SQUARE}, 
@@ -69,13 +72,13 @@ static float MICROPHONE[4][2] = { {HALF_SQUARE, HALF_SQUARE},
 static float POINT_DIST[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 static float CORRECT_POINT_DIST[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 static float G_VECTOR[4][2] = {{0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f}};
-uint32_t quadrant_time_stamp[4] = {0, 0, 0, 0};
-volatile bool interrupt_dis[4] = {false, false, false, false};
+volatile uint32_t quadrant_time_stamp[4] = {0, 0, 0, 0};
+bool volatile interrupt_dis[4] = {false, false, false, false};
 static float pix, piy;
 static float mpix, mpiy;
 static Point receiver1 = {0.0f, 0.0f}; // ������1λ��
-static Point receiver2 = {410.0f, 0.0f}; // ������2λ��
-static Point receiver3 = {410.0f, 410.0f}; // ������3λ��
+static Point receiver2 = {HALF_SQUARE * 2, 0.0f}; // ������2λ��
+static Point receiver3 = {HALF_SQUARE * 2, HALF_SQUARE * 2}; // ������3λ��
 int flag = 0;
 /* USER CODE END PV */
 
@@ -129,7 +132,7 @@ int main(void)
   MX_DMA_Init();
   MX_ADC1_Init();
   MX_TIM2_Init();
-  MX_USART1_UART_Init();
+	MX_USART1_UART_Init();
   MX_ADC2_Init();
   MX_ADC3_Init();
   MX_TIM5_Init();
@@ -137,16 +140,19 @@ int main(void)
   HAL_NVIC_DisableIRQ(EXTI1_IRQn);
   HAL_NVIC_DisableIRQ(EXTI2_IRQn);
   HAL_NVIC_DisableIRQ(EXTI3_IRQn);
-  HAL_NVIC_DisableIRQ(EXTI4_IRQn);
-  AD9833_Init();
-  AD9833_Set_Amplitude(0);
+  HAL_NVIC_DisableIRQ(EXTI0_IRQn);
+  __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_2);__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_3);__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
+//  AD9833_Init();
+//  AD9833_Set_Amplitude(0);
   UARTHMI_Forget_It();
-  UARTHMI_Reset();
+	UARTHMI_Reset();
   HAL_TIM_Base_Start_IT(&htim2);
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc1_values, ADC_DATA_NUM + 4);
 	HAL_ADC_Start_DMA(&hadc2, (uint32_t*)adc2_values, ADC_DATA_NUM + 4);
 	HAL_ADC_Start_DMA(&hadc3, (uint32_t*)adc3_values, ADC_DATA_NUM + 4);
-  HAL_Delay(150);
+	HAL_Delay(150);
+//		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_2);__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_3);__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
+//  while(1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -158,16 +164,17 @@ int main(void)
     /* USER CODE BEGIN 3 */
 	  if (sweep_freq)
     {
-		AD9833_Set_Amplitude(127);
+//		AD9833_Set_Amplitude(127);
 		HAL_Delay(100);
       for (uint16_t i = 15; i < 21; ++i)
       {
 		  
-        AD9833_Default_Set(i * 1000);
+//        AD9833_Default_Set(i * 1000);
+		  AD9833_WaveSeting_Double(i * 1000,0,SIN_WAVE,985);
         HAL_Delay(1000);
       }
-      AD9833_Set_Amplitude(0);
-	  AD9833_Default_Set(0);
+//      AD9833_Set_Amplitude(0);
+//	  AD9833_Default_Set(0);
       sweep_freq = false;
     }
     else if (sound_trace)
@@ -175,24 +182,52 @@ int main(void)
 		printf("page page0\xff\xff\xff");
       __HAL_TIM_SetCounter(&htim5, 0);
       HAL_TIM_Base_Start(&htim5);
-      __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);
+		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);
       HAL_NVIC_EnableIRQ(EXTI1_IRQn);
-      __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_2);
+		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_2);
       HAL_NVIC_EnableIRQ(EXTI2_IRQn);
-      __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_3);
+		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_3);
       HAL_NVIC_EnableIRQ(EXTI3_IRQn);
-      __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_4);
-      HAL_NVIC_EnableIRQ(EXTI4_IRQn);
+		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
+      HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+		enable_interrupt[0] = __NVIC_GetEnableIRQ(EXTI0_IRQn);
+	  enable_interrupt[1] = __NVIC_GetEnableIRQ(EXTI1_IRQn);
+	  enable_interrupt[2] = __NVIC_GetEnableIRQ(EXTI2_IRQn);
+	  enable_interrupt[3] = __NVIC_GetEnableIRQ(EXTI3_IRQn);
+		if ((quadrant_time_stamp[0] < DELAY_MIN) && (!enable_interrupt[0]))
+	  {
+		  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+		enable_interrupt[0] = 1;
+	  }
+	  if ((quadrant_time_stamp[1] < DELAY_MIN) && (!enable_interrupt[1]))
+	  {
+		  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+		enable_interrupt[1] = 1;
+	  }
+	  if ((quadrant_time_stamp[2] < DELAY_MIN) && (!enable_interrupt[2]))
+	  {
+		  HAL_NVIC_EnableIRQ(EXTI2_IRQn);
+		enable_interrupt[2] = 1;
+	  }
+	  if ((quadrant_time_stamp[3] < DELAY_MIN) && (!enable_interrupt[3]))
+	  {
+		  HAL_NVIC_EnableIRQ(EXTI3_IRQn);
+		enable_interrupt[3] = 1;
+	  }
       while (1)
       {
-        if ((!((__NVIC_GetEnableIRQ(EXTI1_IRQn)) | (__NVIC_GetEnableIRQ(EXTI2_IRQn)) | (__NVIC_GetEnableIRQ(EXTI3_IRQn)) | (__NVIC_GetEnableIRQ(EXTI4_IRQn))))) // ((interrupt_dis[Q1]) & (interrupt_dis[Q2]) & (interrupt_dis[Q3]) & (interrupt_dis[Q4]))
+		  enable_interrupt[0] = __NVIC_GetEnableIRQ(EXTI0_IRQn);
+		  enable_interrupt[1] = __NVIC_GetEnableIRQ(EXTI1_IRQn);
+		  enable_interrupt[2] = __NVIC_GetEnableIRQ(EXTI2_IRQn);
+		  enable_interrupt[3] = __NVIC_GetEnableIRQ(EXTI3_IRQn);
+        if ((!(enable_interrupt[0] | enable_interrupt[1] | enable_interrupt[2] | enable_interrupt[3]))) // (__NVIC_GetEnableIRQ(EXTI1_IRQn)) | 
         {
           Quadrant_Lattice_Indexing();
-          HAL_Delay(1000);
-          break;
-        }
-        else if (sweep_freq | magnet_trace)
-        {
+//			for (uint16_t i = 0; i < 4; ++i)
+//			{
+//				quadrant_time_stamp[i] = 0;
+//			}
+//          HAL_Delay(2000);
           break;
         }
       }
@@ -278,25 +313,42 @@ static void Gradient_descent(uint8_t step)
   for (uint8_t i = 0; i < 4; ++i)
   {
     POINT_DIST[i] /= sum;
-    temp = (steps + sum / 20.0f) * (1.0f - logf(1.0f + expf(step / 5.0f - 10.0f)) / 0.65f);
+    temp = steps * (1.0f - logf(1.0f + expf(step / 5.0f - 10.0f)) / 0.65f);
     gradients_list[i][0] = G_VECTOR[i][0] * POINT_DIST[i] * temp;
     gradients_list[i][1] = G_VECTOR[i][1] * POINT_DIST[i] * temp;
     pix += gradients_list[i][0];
     piy += gradients_list[i][1];
   }
-  
+  if (pix > LENGTH / 2)
+  {
+	pix = 125;
+  }
+  else if (pix < -LENGTH / 2)
+  {
+	pix = -125;
+  }
+  if (piy > LENGTH / 2)
+  {
+	piy = 125;
+  }
+  else if (piy < -LENGTH / 2)
+  {
+	piy = -125;
+  }
 }
 
 static void Gradient_descent_wrapper(void)
 {
+	float norm_vec;
   for (uint8_t i = 0; i < 4; ++i)
   {
     G_VECTOR[i][0] = MICROPHONE[i][0] - MICROPHONE[P_skip_num][0];
     G_VECTOR[i][1] = MICROPHONE[i][1] - MICROPHONE[P_skip_num][1];
     if (i != P_skip_num)
     {
-      G_VECTOR[i][0] /= norm(G_VECTOR[i][0], G_VECTOR[i][1]) * sqrtf(3.0f);
-      G_VECTOR[i][1] /= norm(G_VECTOR[i][0], G_VECTOR[i][1]) * sqrtf(3.0f);
+		norm_vec = norm(G_VECTOR[i][0], G_VECTOR[i][1]);
+      G_VECTOR[i][0] /= norm_vec * sqrtf(3.0f);
+      G_VECTOR[i][1] /= norm_vec * sqrtf(3.0f);
     }
   }
   for (uint8_t i = 0; i < total_steps; ++i)
@@ -317,19 +369,38 @@ static void Quadrant_Lattice_Indexing(void)
       min = quadrant_time_stamp[i];
     }
   }
-//  pix = MICROPHONE[P_skip_num][0] * LENGTH / HALF_SQUARE / 4;
-//  piy = MICROPHONE[P_skip_num][1] * LENGTH / HALF_SQUARE / 4;
+  pix = MICROPHONE[P_skip_num][0] * LENGTH / HALF_SQUARE / 4;
+  piy = MICROPHONE[P_skip_num][1] * LENGTH / HALF_SQUARE / 4;
   for (uint8_t i = 0; i < 4; ++i)
   {
-    CORRECT_POINT_DIST[i] = (float)(quadrant_time_stamp[i] - min) * V_BOARD / CLK_FREQ;
 	  tdoa_wanted[i] = (float)quadrant_time_stamp[i] / CLK_FREQ;
   }
   Point pinit = calculateSourceLocation(receiver1, receiver2, receiver3, tdoa_wanted[2], tdoa_wanted[3], tdoa_wanted[0]);
   pix = pinit.x;
   piy = pinit.y;
-  pix -= WIDTH / 2;
-  piy -= LENGTH / 2;
-  printf("t26.txt=\"%d,%d\"\xff\xff\xff", (int16_t)(pix * 100), (int16_t)(piy * 100));
+  pix -= HALF_SQUARE;
+  piy -= HALF_SQUARE;
+  if (pix > LENGTH / 2)
+  {
+	pix = 125;
+  }
+  else if (pix < -LENGTH / 2)
+  {
+	pix = -125;
+  }
+  if (piy > LENGTH / 2)
+  {
+	piy = 125;
+  }
+  else if (piy < -LENGTH / 2)
+  {
+	piy = -125;
+  }
+  printf("t26.txt=\"%d,%d\"\xff\xff\xff", (int16_t)(pix), (int16_t)(piy));
+  for (uint8_t i = 0; i < 4; ++i)
+  {
+    CORRECT_POINT_DIST[i] = (float)(quadrant_time_stamp[i] - min) * V_BOARD / CLK_FREQ;
+  }
 //  Gradient_descent_wrapper();
   pix += WIDTH / 2;
   piy = -piy;
@@ -376,8 +447,8 @@ static void Magnet_Indexing(void)
 
 static void Magnet_Mode(void)
 {
-	AD9833_Set_Amplitude(127);
-  AD9833_Default_Set(DEFAULT_DDS_FREQ);
+//	AD9833_Set_Amplitude(127);
+//  AD9833_Default_Set(DEFAULT_DDS_FREQ);
   HAL_Delay(50);
   ADC_Get_Values(DEFAULT_SAMPLE_RATE);
   Magnet_Positioning();
@@ -390,6 +461,8 @@ static Point calculateSourceLocation(Point receiver1, Point receiver2, Point rec
     float distance1 = V_BOARD * tdoa1;
     float distance2 = V_BOARD * tdoa2;
     float distance3 = V_BOARD * tdoa3;
+	a_watch = tdoa2 - tdoa1;
+	b_watch = tdoa3 - tdoa1;
 
     float R21 = distance2 - distance1;
     float R31 = distance3 - distance1;
@@ -399,20 +472,11 @@ static Point calculateSourceLocation(Point receiver1, Point receiver2, Point rec
     float e = receiver2.x*(1-(receiver2.x/R21)*(receiver2.x/R21))-2*g*h;
     float f = (R21*R21/4)*(1-(receiver2.x/R21)*(receiver2.x/R21))*(1-(receiver2.x/R21)*(receiver2.x/R21))-h*h;
     float x1 = (-e-sqrtf(e*e-4*d*f))/(2*d);
+	watch = e*e-4*d*f;
     float y1 = g*x1+h;
     float x2 = (-e+sqrtf(e*e-4*d*f))/(2*d);
     float y2 = g*x2+h;
     Point source;
-    if(x1 <= 0 || x1 >= receiver3.x || y1 <= 0 || y1 >= receiver3.y) {
-        source.x = x2;
-        source.y = y2;
-        return source;
-    }
-    if(x2 <= 0 || x2 >= receiver3.x || y2 <= 0 || y2 >= receiver3.y) {
-        source.x = x1;
-        source.y = y1;
-        return source;
-    }
     float t1 = (R21*R21-receiver2.x*receiver2.x+2*receiver2.x*x1+2*R21*sqrtf(x1*x1+y1*y1));
     float t2 = (R21*R21-receiver2.x*receiver2.x+2*receiver2.x*x2+2*R21*sqrtf(x2*x2+y2*y2));
     if(t1 < 0) t1 = -t1;

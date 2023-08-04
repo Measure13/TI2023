@@ -22,19 +22,21 @@ Dialog DLL:      TCM.DLL V1.56.1.0
  
 <h2>Project:</h2>
 D:\MyWorks\Programs\Github\TI2023\TI2023_STM32\MDK-ARM\TI2023_STM32.uvprojx
-Project File Date:  08/03/2023
+Project File Date:  08/04/2023
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Softwares\Keil5\ARM\ARM_Compiler_5.06u7\Bin'
 Build target 'TI2023_STM32'
 compiling main.c...
-../Core/Src/main.c(294): warning:  #177-D: function "Gradient_descent_wrapper"  was declared but never referenced
+../Core/Src/main.c(419): warning:  #167-D: argument of type "volatile uint32_t *" is incompatible with parameter of type "void *"
+    memset(quadrant_time_stamp, 0x00000000, sizeof(uint32_t) * 4);
+../Core/Src/main.c(340): warning:  #177-D: function "Gradient_descent_wrapper"  was declared but never referenced
   static void Gradient_descent_wrapper(void)
-../Core/Src/main.c: 1 warning, 0 errors
+../Core/Src/main.c: 2 warnings, 0 errors
 linking...
-Program Size: Code=21956 RO-data=456 RW-data=88 ZI-data=11288  
+Program Size: Code=21916 RO-data=456 RW-data=132 ZI-data=11284  
 FromELF: creating hex file...
-"TI2023_STM32\TI2023_STM32.axf" - 0 Error(s), 1 Warning(s).
+"TI2023_STM32\TI2023_STM32.axf" - 0 Error(s), 2 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -58,7 +60,7 @@ Package Vendor: Keil
 
    * Component: ARM::CMSIS:CORE:5.6.0
       Include file:  CMSIS/Core/Include/tz_context.h
-Build Time Elapsed:  00:00:04
+Build Time Elapsed:  00:00:02
 </pre>
 </body>
 </html>

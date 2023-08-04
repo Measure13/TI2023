@@ -50,13 +50,14 @@ extern "C" {
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
+#define DELAY_MIN 500
 #define ADC_DATA_NUM 1024
 #define CLK_FREQ 84000000
 #define LENGTH 300
 #define WIDTH 300
 #define M_MARGIN 60
 #define HALF_SQUARE (LENGTH / 2 + M_MARGIN)
-#define V_BOARD 3000
+#define V_BOARD 775000
 #define UARTHMI_LATTICE 12
 #define LATTICE_6_UNIT 50
 #define LATTICE_12_UNIT 25
@@ -72,24 +73,18 @@ void Error_Handler(void);
 /* USER CODE BEGIN EFP */
 extern uint16_t adc_values[ADC_DATA_NUM + 4];
 extern bool adc_values_sqr[ADC_DATA_NUM];
-extern uint32_t quadrant_time_stamp[4];
+extern volatile uint32_t quadrant_time_stamp[4];
 extern int flag;
 extern volatile bool interrupt_dis[4];
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define Q1_Pin GPIO_PIN_1
-#define Q1_GPIO_Port GPIOF
-#define Q1_EXTI_IRQn EXTI1_IRQn
-#define Q2_Pin GPIO_PIN_2
-#define Q2_GPIO_Port GPIOF
-#define Q2_EXTI_IRQn EXTI2_IRQn
-#define Q3_Pin GPIO_PIN_3
-#define Q3_GPIO_Port GPIOF
-#define Q3_EXTI_IRQn EXTI3_IRQn
-#define Q4_Pin GPIO_PIN_4
-#define Q4_GPIO_Port GPIOF
-#define Q4_EXTI_IRQn EXTI4_IRQn
+#define Q3_Pin GPIO_PIN_2
+#define Q3_GPIO_Port GPIOE
+#define Q3_EXTI_IRQn EXTI2_IRQn
+#define Q4_Pin GPIO_PIN_3
+#define Q4_GPIO_Port GPIOC
+#define Q4_EXTI_IRQn EXTI3_IRQn
 #define SPI1_CS_Pin GPIO_PIN_4
 #define SPI1_CS_GPIO_Port GPIOA
 #define SPI1_SCK_Pin GPIO_PIN_5
@@ -98,6 +93,12 @@ extern volatile bool interrupt_dis[4];
 #define SPI1_FSYNC_GPIO_Port GPIOA
 #define SPI1_DAT_Pin GPIO_PIN_7
 #define SPI1_DAT_GPIO_Port GPIOA
+#define Q1_Pin GPIO_PIN_0
+#define Q1_GPIO_Port GPIOG
+#define Q1_EXTI_IRQn EXTI0_IRQn
+#define Q2_Pin GPIO_PIN_1
+#define Q2_GPIO_Port GPIOD
+#define Q2_EXTI_IRQn EXTI1_IRQn
 
 /* USER CODE BEGIN Private defines */
 #define Q1 0

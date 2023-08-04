@@ -163,37 +163,42 @@
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>conv_done</ItemText>
+          <ItemText>__NVIC_GetEnableIRQ(EXTI1_IRQn)</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>__NVIC_GetEnableIRQ(EXTI1_IRQn)</ItemText>
+          <ItemText>__NVIC_GetEnableIRQ(EXTI2_IRQn)</ItemText>
         </Ww>
         <Ww>
           <count>3</count>
           <WinNumber>1</WinNumber>
-          <ItemText>__NVIC_GetEnableIRQ(EXTI2_IRQn)</ItemText>
+          <ItemText>__NVIC_GetEnableIRQ(EXTI3_IRQn)</ItemText>
         </Ww>
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>__NVIC_GetEnableIRQ(EXTI3_IRQn)</ItemText>
+          <ItemText>flag</ItemText>
         </Ww>
         <Ww>
           <count>5</count>
           <WinNumber>1</WinNumber>
-          <ItemText>flag</ItemText>
+          <ItemText>quadrant_time_stamp,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>6</count>
           <WinNumber>1</WinNumber>
-          <ItemText>quadrant_time_stamp,0x0A</ItemText>
+          <ItemText>tdoa_wanted</ItemText>
         </Ww>
         <Ww>
           <count>7</count>
           <WinNumber>1</WinNumber>
-          <ItemText>tdoa_wanted</ItemText>
+          <ItemText>pix</ItemText>
+        </Ww>
+        <Ww>
+          <count>8</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>piy</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>
