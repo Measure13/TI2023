@@ -135,15 +135,6 @@
 //***************************	
 
 	/*端口定义 */ 
-//	#define PORT_FSYNC	GPIOB
-//	#define PIN_FSYNC	GPIO_Pin_15  //PC7
-
-//	#define PORT_SCK	GPIOB
-//	#define PIN_SCK		GPIO_Pin_14  //PC8
-
-//	#define PORT_DAT	GPIOB
-//	#define PIN_DAT		GPIO_Pin_13  //PC9
-
 //	#define PORT_FSY1		GPIOB
 //	#define PIN_FSY1		GPIO_Pin_12  //数字电位器片选//PA8
 

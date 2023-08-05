@@ -76,9 +76,9 @@ volatile uint32_t quadrant_time_stamp[4] = {0, 0, 0, 0};
 bool volatile interrupt_dis[4] = {false, false, false, false};
 static float pix, piy;
 static float mpix, mpiy;
-static Point receiver1 = {0.0f, 0.0f}; // ������1λ��
-static Point receiver2 = {HALF_SQUARE * 2, 0.0f}; // ������2λ��
-static Point receiver3 = {HALF_SQUARE * 2, HALF_SQUARE * 2}; // ������3λ��
+static Point receiver1 = {0.0f, 0.0f};
+static Point receiver2 = {HALF_SQUARE * 2, 0.0f};
+static Point receiver3 = {HALF_SQUARE * 2, HALF_SQUARE * 2};
 int flag = 0;
 /* USER CODE END PV */
 
@@ -182,8 +182,8 @@ int main(void)
 		printf("page page0\xff\xff\xff");
       __HAL_TIM_SetCounter(&htim5, 0);
       HAL_TIM_Base_Start(&htim5);
-		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);
-      HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+//		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);
+//      HAL_NVIC_EnableIRQ(EXTI1_IRQn);
 		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_2);
       HAL_NVIC_EnableIRQ(EXTI2_IRQn);
 		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_3);
@@ -191,7 +191,7 @@ int main(void)
 		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
       HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 		enable_interrupt[0] = __NVIC_GetEnableIRQ(EXTI0_IRQn);
-	  enable_interrupt[1] = __NVIC_GetEnableIRQ(EXTI1_IRQn);
+//	  enable_interrupt[1] = __NVIC_GetEnableIRQ(EXTI1_IRQn);
 	  enable_interrupt[2] = __NVIC_GetEnableIRQ(EXTI2_IRQn);
 	  enable_interrupt[3] = __NVIC_GetEnableIRQ(EXTI3_IRQn);
 		if ((quadrant_time_stamp[0] < DELAY_MIN) && (!enable_interrupt[0]))
@@ -199,11 +199,11 @@ int main(void)
 		  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 		enable_interrupt[0] = 1;
 	  }
-	  if ((quadrant_time_stamp[1] < DELAY_MIN) && (!enable_interrupt[1]))
-	  {
-		  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
-		enable_interrupt[1] = 1;
-	  }
+//	  if ((quadrant_time_stamp[1] < DELAY_MIN) && (!enable_interrupt[1]))
+//	  {
+//		  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+//		enable_interrupt[1] = 1;
+//	  }
 	  if ((quadrant_time_stamp[2] < DELAY_MIN) && (!enable_interrupt[2]))
 	  {
 		  HAL_NVIC_EnableIRQ(EXTI2_IRQn);
@@ -217,10 +217,10 @@ int main(void)
       while (1)
       {
 		  enable_interrupt[0] = __NVIC_GetEnableIRQ(EXTI0_IRQn);
-		  enable_interrupt[1] = __NVIC_GetEnableIRQ(EXTI1_IRQn);
+//		  enable_interrupt[1] = __NVIC_GetEnableIRQ(EXTI1_IRQn);
 		  enable_interrupt[2] = __NVIC_GetEnableIRQ(EXTI2_IRQn);
 		  enable_interrupt[3] = __NVIC_GetEnableIRQ(EXTI3_IRQn);
-        if ((!(enable_interrupt[0] | enable_interrupt[1] | enable_interrupt[2] | enable_interrupt[3]))) // (__NVIC_GetEnableIRQ(EXTI1_IRQn)) | 
+        if ((!(enable_interrupt[0] | enable_interrupt[2] | enable_interrupt[3]))) //  | enable_interrupt[1]
         {
           Quadrant_Lattice_Indexing();
 //			for (uint16_t i = 0; i < 4; ++i)
@@ -449,10 +449,11 @@ static void Magnet_Mode(void)
 {
 //	AD9833_Set_Amplitude(127);
 //  AD9833_Default_Set(DEFAULT_DDS_FREQ);
-  HAL_Delay(50);
-  ADC_Get_Values(DEFAULT_SAMPLE_RATE);
-  Magnet_Positioning();
-  Magnet_Indexing();
+	
+//  HAL_Delay(50);
+//  ADC_Get_Values(DEFAULT_SAMPLE_RATE);
+//  Magnet_Positioning();
+//  Magnet_Indexing();
 }
 
 static Point calculateSourceLocation(Point receiver1, Point receiver2, Point receiver3, float tdoa1, float tdoa2, float tdoa3)
