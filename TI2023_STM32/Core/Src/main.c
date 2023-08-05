@@ -182,8 +182,8 @@ int main(void)
 		printf("page page0\xff\xff\xff");
       __HAL_TIM_SetCounter(&htim5, 0);
       HAL_TIM_Base_Start(&htim5);
-//		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);
-//      HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);
+      HAL_NVIC_EnableIRQ(EXTI1_IRQn);
 		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_2);
       HAL_NVIC_EnableIRQ(EXTI2_IRQn);
 		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_3);
@@ -191,7 +191,7 @@ int main(void)
 		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
       HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 		enable_interrupt[0] = __NVIC_GetEnableIRQ(EXTI0_IRQn);
-//	  enable_interrupt[1] = __NVIC_GetEnableIRQ(EXTI1_IRQn);
+	  enable_interrupt[1] = __NVIC_GetEnableIRQ(EXTI1_IRQn);
 	  enable_interrupt[2] = __NVIC_GetEnableIRQ(EXTI2_IRQn);
 	  enable_interrupt[3] = __NVIC_GetEnableIRQ(EXTI3_IRQn);
 		if ((quadrant_time_stamp[0] < DELAY_MIN) && (!enable_interrupt[0]))
@@ -199,11 +199,11 @@ int main(void)
 		  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 		enable_interrupt[0] = 1;
 	  }
-//	  if ((quadrant_time_stamp[1] < DELAY_MIN) && (!enable_interrupt[1]))
-//	  {
-//		  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
-//		enable_interrupt[1] = 1;
-//	  }
+	  if ((quadrant_time_stamp[1] < DELAY_MIN) && (!enable_interrupt[1]))
+	  {
+		  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+		enable_interrupt[1] = 1;
+	  }
 	  if ((quadrant_time_stamp[2] < DELAY_MIN) && (!enable_interrupt[2]))
 	  {
 		  HAL_NVIC_EnableIRQ(EXTI2_IRQn);
@@ -217,10 +217,10 @@ int main(void)
       while (1)
       {
 		  enable_interrupt[0] = __NVIC_GetEnableIRQ(EXTI0_IRQn);
-//		  enable_interrupt[1] = __NVIC_GetEnableIRQ(EXTI1_IRQn);
+		  enable_interrupt[1] = __NVIC_GetEnableIRQ(EXTI1_IRQn);
 		  enable_interrupt[2] = __NVIC_GetEnableIRQ(EXTI2_IRQn);
 		  enable_interrupt[3] = __NVIC_GetEnableIRQ(EXTI3_IRQn);
-        if ((!(enable_interrupt[0] | enable_interrupt[2] | enable_interrupt[3]))) //  | enable_interrupt[1]
+        if ((!(enable_interrupt[0] | enable_interrupt[1] | enable_interrupt[2] | enable_interrupt[3]))) // 
         {
           Quadrant_Lattice_Indexing();
 //			for (uint16_t i = 0; i < 4; ++i)
@@ -360,7 +360,9 @@ static void Gradient_descent_wrapper(void)
 static void Quadrant_Lattice_Indexing(void)
 {
   int8_t x_index, y_index;
+	float temp_x_y;
   uint32_t min = quadrant_time_stamp[0];
+	P_skip_num = 0;
   for (uint8_t i = 1; i < 4; ++i)
   {
     if (quadrant_time_stamp[i] < min)
@@ -375,11 +377,48 @@ static void Quadrant_Lattice_Indexing(void)
   {
 	  tdoa_wanted[i] = (float)quadrant_time_stamp[i] / CLK_FREQ;
   }
-  Point pinit = calculateSourceLocation(receiver1, receiver2, receiver3, tdoa_wanted[2], tdoa_wanted[3], tdoa_wanted[0]);
-  pix = pinit.x;
-  piy = pinit.y;
-  pix -= HALF_SQUARE;
-  piy -= HALF_SQUARE;
+  if (P_skip_num == 1)
+  {
+	 Point pinit = calculateSourceLocation(receiver1, receiver2, receiver3, tdoa_wanted[0], tdoa_wanted[1], tdoa_wanted[2]);
+	  pix = pinit.x;
+	  piy = pinit.y;
+	  pix -= HALF_SQUARE;
+		piy -= HALF_SQUARE;
+	  pix = -pix;
+	  piy = -piy;
+  }
+  else if (P_skip_num == 2)
+  {
+	 Point pinit = calculateSourceLocation(receiver1, receiver2, receiver3, tdoa_wanted[1], tdoa_wanted[2], tdoa_wanted[3]);
+	  pix = pinit.x;
+	  piy = pinit.y;
+	  pix -= HALF_SQUARE;
+		piy -= HALF_SQUARE;
+	  pix = -pix;
+	temp_x_y = pix;
+	  pix = piy;
+	  piy = temp_x_y;
+  }
+  else if (P_skip_num == 0)
+  {
+	 Point pinit = calculateSourceLocation(receiver1, receiver2, receiver3, tdoa_wanted[3], tdoa_wanted[0], tdoa_wanted[1]);
+	  pix = pinit.x;
+	  piy = pinit.y;
+	  pix -= HALF_SQUARE;
+		piy -= HALF_SQUARE;
+	  piy = -piy;
+	temp_x_y = pix;
+	  pix = piy;
+	  piy = temp_x_y;
+  }
+  else
+	{
+	  Point pinit = calculateSourceLocation(receiver1, receiver2, receiver3, tdoa_wanted[2], tdoa_wanted[3], tdoa_wanted[0]);
+	  pix = pinit.x;
+	  piy = pinit.y;
+	  pix -= HALF_SQUARE;
+	  piy -= HALF_SQUARE;
+  }
   if (pix > LENGTH / 2)
   {
 	pix = 125;

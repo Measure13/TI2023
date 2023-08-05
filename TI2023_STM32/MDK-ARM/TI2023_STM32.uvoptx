@@ -153,7 +153,40 @@
           <Name>-U-O142 -O2254 -S0 -C0 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -FO7 -FD20000000 -FC800 -FN1 -FF0STM32F4xx_1024.FLM -FS08000000 -FL0100000 -FP0($$Device:STM32F407ZGTx$CMSIS\Flash\STM32F4xx_1024.FLM)</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
-      <Breakpoint/>
+      <Breakpoint>
+        <Bp>
+          <Number>0</Number>
+          <Type>0</Type>
+          <LineNumber>379</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134234116</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>../Core/Src/main.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\TI2023_STM32\../Core/Src/main.c\379</Expression>
+        </Bp>
+        <Bp>
+          <Number>1</Number>
+          <Type>0</Type>
+          <LineNumber>380</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>../Core/Src/main.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+      </Breakpoint>
       <WatchWindow1>
         <Ww>
           <count>0</count>
@@ -200,6 +233,16 @@
           <WinNumber>1</WinNumber>
           <ItemText>piy</ItemText>
         </Ww>
+        <Ww>
+          <count>9</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>P_skip_num</ItemText>
+        </Ww>
+        <Ww>
+          <count>10</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>i</ItemText>
+        </Ww>
       </WatchWindow1>
       <Tracepoint>
         <THDelay>0</THDelay>
@@ -244,7 +287,7 @@
       <pSingCmdsp></pSingCmdsp>
       <pMultCmdsp></pMultCmdsp>
       <DebugDescription>
-        <Enable>1</Enable>
+        <Enable>0</Enable>
         <EnableFlashSeq>1</EnableFlashSeq>
         <EnableLog>0</EnableLog>
         <Protocol>2</Protocol>
