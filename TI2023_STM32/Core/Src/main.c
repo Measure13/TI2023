@@ -80,6 +80,7 @@ static Point receiver1 = {0.0f, 0.0f};
 static Point receiver2 = {HALF_SQUARE * 2, 0.0f};
 static Point receiver3 = {HALF_SQUARE * 2, HALF_SQUARE * 2};
 int flag = 0;
+int tims = 15;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -152,7 +153,6 @@ int main(void)
 	HAL_ADC_Start_DMA(&hadc3, (uint32_t*)adc3_values, ADC_DATA_NUM + 4);
 	HAL_Delay(150);
 //		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_2);__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_3);__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
-//  while(1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -164,15 +164,30 @@ int main(void)
     /* USER CODE BEGIN 3 */
 	  if (sweep_freq)
     {
-//		AD9833_Set_Amplitude(127);
-		HAL_Delay(100);
-      for (uint16_t i = 15; i < 21; ++i)
+      htim5.Instance->CNT = 0;
+      HAL_TIM_Base_Start(&htim5);
+      while(1)
       {
-		  
-//        AD9833_Default_Set(i * 1000);
-		  AD9833_WaveSeting_Double(i * 1000,0,SIN_WAVE,985);
-        HAL_Delay(1000);
+        if (htim5.Instance->CNT >= 84000000 && (!sound_trace && !magnet_trace))
+        {
+    //        AD9833_Default_Set(i * 1000);
+          AD9833_WaveSeting_Double(tims * 1000,0,SIN_WAVE,985);
+          ++tims;
+          if (tims == 21)
+          {
+            tims = 15;
+          }
+          htim5.Instance->CNT = 0;
+        }
+        else if (sound_trace | magnet_trace)
+        {
+          HAL_TIM_Base_Stop(&htim5);
+          htim5.Instance->CNT = 0;
+          break;
+        }
+        
       }
+      
 //      AD9833_Set_Amplitude(0);
 //	  AD9833_Default_Set(0);
       sweep_freq = false;
