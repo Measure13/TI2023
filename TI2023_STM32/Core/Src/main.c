@@ -95,6 +95,7 @@ static void Magnet_Positioning(void);
 static void Magnet_Indexing(void);
 static void Magnet_Mode(void);
 static Point calculateSourceLocation(Point receiver1, Point receiver2, Point receiver3, float tdoa1, float tdoa2, float tdoa3);
+static uint16_t ADC_Get_Vpp(uint16_t* data);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -133,7 +134,7 @@ int main(void)
   MX_DMA_Init();
   MX_ADC1_Init();
   MX_TIM2_Init();
-	MX_USART1_UART_Init();
+  MX_USART1_UART_Init();
   MX_ADC2_Init();
   MX_ADC3_Init();
   MX_TIM5_Init();
@@ -143,14 +144,15 @@ int main(void)
   HAL_NVIC_DisableIRQ(EXTI3_IRQn);
   HAL_NVIC_DisableIRQ(EXTI0_IRQn);
   __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_2);__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_3);__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
-//  AD9833_Init();
-//  AD9833_Set_Amplitude(0);
+  SWITCH_INT_ON;
+  RELAY_DELAY;
   UARTHMI_Forget_It();
 	UARTHMI_Reset();
   HAL_TIM_Base_Start_IT(&htim2);
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc1_values, ADC_DATA_NUM + 4);
 	HAL_ADC_Start_DMA(&hadc2, (uint32_t*)adc2_values, ADC_DATA_NUM + 4);
 	HAL_ADC_Start_DMA(&hadc3, (uint32_t*)adc3_values, ADC_DATA_NUM + 4);
+	AD9833_WaveSeting_Double(0,0,SIN_WAVE,985);
 	HAL_Delay(150);
 //		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_2);__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_3);__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
   /* USER CODE END 2 */
@@ -167,6 +169,8 @@ int main(void)
       htim5.Instance->CNT = 0;
       HAL_TIM_Base_Start(&htim5);
       tims = 15;
+      SWITCH_DDS_ON;
+      RELAY_DELAY;
       while(1)
       {
         if (htim5.Instance->CNT >= 84000000 && (!sound_trace && !magnet_trace))
@@ -182,6 +186,7 @@ int main(void)
         }
         else if (sound_trace | magnet_trace)
         {
+			AD9833_WaveSeting_Double(0,0,SIN_WAVE,985);
           HAL_TIM_Base_Stop(&htim5);
           htim5.Instance->CNT = 0;
           break;
@@ -191,10 +196,23 @@ int main(void)
       
 //      AD9833_Set_Amplitude(0);
 //	  AD9833_Default_Set(0);
+      SWITCH_INT_ON;
+      RELAY_DELAY;
       sweep_freq = false;
     }
     else if (sound_trace)
     {
+		if ((HAL_GPIO_ReadPin(Q1_GPIO_Port, Q1_Pin) == GPIO_PIN_SET) | (HAL_GPIO_ReadPin(Q2_GPIO_Port, Q2_Pin) == GPIO_PIN_SET) | (HAL_GPIO_ReadPin(Q3_GPIO_Port, Q3_Pin) == GPIO_PIN_SET) | (HAL_GPIO_ReadPin(Q4_GPIO_Port, Q4_Pin) == GPIO_PIN_SET))
+		{
+			SWITCH_DDS_ON;
+			RELAY_DELAY;
+			RELAY_DELAY;
+			SWITCH_INT_ON;
+			RELAY_DELAY;
+			RELAY_DELAY;
+		}
+		else
+		{
 		printf("page page0\xff\xff\xff");
       __HAL_TIM_SetCounter(&htim5, 0);
       HAL_TIM_Base_Start(&htim5);
@@ -248,6 +266,7 @@ int main(void)
         }
       }
       HAL_TIM_Base_Stop(&htim5);
+		}
       sound_trace = false;
     }
     else if (magnet_trace)
@@ -488,6 +507,12 @@ void Configuration_Init(void)
 static void Magnet_Positioning(void)
 {
   //mpix, mpiy
+	uint8_t x_index, y_index;
+	uint32_t tim_cnt = htim2.Instance->CNT;
+	x_index = tim_cnt % 12 + 1;
+	y_index = (tim_cnt / 12 + 1) % 12;
+	mpix = x_index * LATTICE_12_UNIT - LENGTH / 2 - 12.5;
+	mpiy = y_index * LATTICE_12_UNIT - WIDTH / 2 - 12.5;
 }
 
 static void Magnet_Indexing(void)
@@ -500,18 +525,27 @@ static void Magnet_Indexing(void)
   y_index = (uint8_t)(mpiy / LATTICE_12_UNIT) + 1;
   printf("page 0\xff\xff\xff");
   printf("t25.txt=\"(%c,%02d)\"\xff\xff\xff", (x_index | 0x40), y_index);
-  printf("fill %d,%d,%d,%d,BROWN\xff\xff\xff", x_index * LATTICE_6_SQUARE_UH, y_index * LATTICE_6_SQUARE_UH, LATTICE_6_SQUARE_UH, LATTICE_6_SQUARE_UH);
+  printf("t26.txt=\"(%d,%d)\"\xff\xff\xff", (int16_t)mpix, (int16_t)mpiy);
+  printf("fill %d,%d,%d,%d,BROWN\xff\xff\xff", x_index * LATTICE_12_SQUARE_UH, y_index * LATTICE_12_SQUARE_UH, LATTICE_12_SQUARE_UH, LATTICE_12_SQUARE_UH);
 }
 
 static void Magnet_Mode(void)
 {
 //	AD9833_Set_Amplitude(127);
 //  AD9833_Default_Set(DEFAULT_DDS_FREQ);
-	
+//	SWITCH_DDS_ON;
+//	htim2.Instance->ARR = 144;
+//	htim2.Instance->EGR = TIM_EGR_UG;
+//	HAL_TIM_Base_Start(&htim2);
+//	RELAY_DELAY;
+//	AD9833_WaveSeting_Double(15000,0,SIN_WAVE,985);
 //  HAL_Delay(50);
 //  ADC_Get_Values(DEFAULT_SAMPLE_RATE);
 //  Magnet_Positioning();
 //  Magnet_Indexing();
+//	AD9833_WaveSeting_Double(0,0,SIN_WAVE,985);
+//	SWITCH_INT_ON;
+//	RELAY_DELAY;
 }
 
 static Point calculateSourceLocation(Point receiver1, Point receiver2, Point receiver3, float tdoa1, float tdoa2, float tdoa3)
@@ -549,6 +583,17 @@ static Point calculateSourceLocation(Point receiver1, Point receiver2, Point rec
         source.y = y2;
     }
     return source;
+}
+
+uint16_t ADC_Get_Vpp(uint16_t* data)
+{
+  uint16_t max = data[0];
+  uint16_t min = data[0];
+  for(int i = 0; i < ADC_DATA_NUM; ++i){
+      if(data[i] > max) {max = data[i];}
+      else if(data[i] < min) {min = data[i];}
+  }
+  return max - min;
 }
 /* USER CODE END 4 */
 

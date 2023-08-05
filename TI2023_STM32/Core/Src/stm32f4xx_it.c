@@ -217,8 +217,8 @@ void EXTI0_IRQHandler(void)
 	__HAL_GPIO_EXTI_CLEAR_IT(Q1_Pin);
 	//return;
   /* USER CODE END EXTI0_IRQn 0 */
- // HAL_GPIO_EXTI_IRQHandler(Q1_Pin);
- /* USER CODE BEGIN EXTI0_IRQn 1 */
+  HAL_GPIO_EXTI_IRQHandler(Q1_Pin);
+  /* USER CODE BEGIN EXTI0_IRQn 1 */
 
   /* USER CODE END EXTI0_IRQn 1 */
 }
@@ -237,7 +237,7 @@ void EXTI1_IRQHandler(void)
 	__HAL_GPIO_EXTI_CLEAR_IT(Q2_Pin);
 	//return;
   /* USER CODE END EXTI1_IRQn 0 */
- // HAL_GPIO_EXTI_IRQHandler(Q2_Pin);
+  HAL_GPIO_EXTI_IRQHandler(Q2_Pin);
   /* USER CODE BEGIN EXTI1_IRQn 1 */
 //
   /* USER CODE END EXTI1_IRQn 1 */
@@ -257,7 +257,7 @@ void EXTI2_IRQHandler(void)
 	__HAL_GPIO_EXTI_CLEAR_IT(Q3_Pin);
 	//return;
   /* USER CODE END EXTI2_IRQn 0 */
- // HAL_GPIO_EXTI_IRQHandler(Q3_Pin);
+  HAL_GPIO_EXTI_IRQHandler(Q3_Pin);
   /* USER CODE BEGIN EXTI2_IRQn 1 */
 
   /* USER CODE END EXTI2_IRQn 1 */
@@ -277,7 +277,7 @@ void EXTI3_IRQHandler(void)
 	__HAL_GPIO_EXTI_CLEAR_IT(Q4_Pin);
 	//return;
   /* USER CODE END EXTI3_IRQn 0 */
-  //HAL_GPIO_EXTI_IRQHandler(Q4_Pin);
+  HAL_GPIO_EXTI_IRQHandler(Q4_Pin);
   /* USER CODE BEGIN EXTI3_IRQn 1 */
 
   /* USER CODE END EXTI3_IRQn 1 */

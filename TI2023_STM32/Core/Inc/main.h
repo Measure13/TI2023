@@ -82,6 +82,9 @@ extern volatile bool interrupt_dis[4];
 #define Q3_Pin GPIO_PIN_2
 #define Q3_GPIO_Port GPIOE
 #define Q3_EXTI_IRQn EXTI2_IRQn
+#define Q1_Pin GPIO_PIN_0
+#define Q1_GPIO_Port GPIOC
+#define Q1_EXTI_IRQn EXTI0_IRQn
 #define Q4_Pin GPIO_PIN_3
 #define Q4_GPIO_Port GPIOC
 #define Q4_EXTI_IRQn EXTI3_IRQn
@@ -93,9 +96,8 @@ extern volatile bool interrupt_dis[4];
 #define SPI1_FSYNC_GPIO_Port GPIOA
 #define SPI1_DAT_Pin GPIO_PIN_7
 #define SPI1_DAT_GPIO_Port GPIOA
-#define Q1_Pin GPIO_PIN_0
-#define Q1_GPIO_Port GPIOG
-#define Q1_EXTI_IRQn EXTI0_IRQn
+#define RELAY_Pin GPIO_PIN_2
+#define RELAY_GPIO_Port GPIOB
 #define Q2_Pin GPIO_PIN_1
 #define Q2_GPIO_Port GPIOD
 #define Q2_EXTI_IRQn EXTI1_IRQn
@@ -105,6 +107,9 @@ extern volatile bool interrupt_dis[4];
 #define Q2 1
 #define Q3 2
 #define Q4 3
+#define SWITCH_DDS_ON HAL_GPIO_WritePin(RELAY_GPIO_Port,RELAY_Pin,GPIO_PIN_SET)
+#define SWITCH_INT_ON HAL_GPIO_WritePin(RELAY_GPIO_Port,RELAY_Pin,GPIO_PIN_RESET)
+#define RELAY_DELAY HAL_Delay(100)
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
