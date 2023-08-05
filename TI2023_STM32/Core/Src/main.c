@@ -464,6 +464,9 @@ static void Quadrant_Lattice_Indexing(void)
   printf("page 0\xff\xff\xff");
   printf("t25.txt=\"(%c%c,%02d%02d)\"\xff\xff\xff", ((x_index * 2 - 1) | 0x40), ((x_index * 2) | 0x40), y_index * 2 - 1, y_index * 2);
   printf("fill %d,%d,%d,%d,BLUE\xff\xff\xff", (x_index - 1) * LATTICE_6_SQUARE_UH + LATTICE_12_SQUARE_UH + 1, (y_index - 1) * LATTICE_6_SQUARE_UH + LATTICE_12_SQUARE_UH + 1, LATTICE_6_SQUARE_UH, LATTICE_6_SQUARE_UH);
+  x_index = (uint8_t)(pix / LATTICE_12_UNIT) + 1;
+  y_index = (uint8_t)(piy / LATTICE_12_UNIT) + 1;
+  printf("fill %d,%d,%d,%d,BROWN\xff\xff\xff", x_index * LATTICE_12_SQUARE_UH, y_index * LATTICE_12_SQUARE_UH, LATTICE_12_SQUARE_UH, LATTICE_12_SQUARE_UH);
 }
 
 void Configuration_Init(void)
