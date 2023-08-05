@@ -166,6 +166,7 @@ int main(void)
     {
       htim5.Instance->CNT = 0;
       HAL_TIM_Base_Start(&htim5);
+      tims = 15;
       while(1)
       {
         if (htim5.Instance->CNT >= 84000000 && (!sound_trace && !magnet_trace))
